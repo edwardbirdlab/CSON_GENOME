@@ -4,7 +4,7 @@
  
  ## Adapter Removal
  
- apptainer version: 1.3.1
+ apptainer version: 1.3.1 <br>
  pdadaoterfilt version: Version 3
  
  ```
@@ -26,7 +26,7 @@ apptainer exec ./mitohifi.sif mitohifi.py -r cson_f_hifi.filt.fasta -f ./mitoref
 
 ## Removing Mitochondrial Reads
 
-Minimap2 Version: 2.26
+Minimap2 Version: 2.26 <br>
 Samtools Version: 1.17
 
 ```
