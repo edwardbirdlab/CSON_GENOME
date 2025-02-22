@@ -75,9 +75,9 @@ apptainer exec ./blobtools_1.1.sif blobtools plot -i blobout/cson_f.blobDB.json
 
 ## Insepct Blobtools output
 
-# Blobtools Plot
+### Blobtools Plot
 
-# Make a list of the scaffolds you want to keep
+### Make a list of the scaffolds you want to keep
 
 Blobtools Version: 1.1
 
@@ -85,9 +85,9 @@ Blobtools Version: 1.1
 apptainer exec ./blobtools_1.1.sif blobtools seqfilter -i cson_F_hifi_phased.asm.hic.hap1.p_ctg.fasta -l keep_scaffolds_blobtools.txt
 ```
 
-# Final Filtered Contigs at: cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fna
+### Final Filtered Contigs at: cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fna
 
 
-# Juice box prep (Juicer)
+### Juice box prep (Juicer)
 
 
