@@ -23,6 +23,7 @@
 ## Mitochondrial Genome
  
  MitoHiFi Version: 3.2.2
+ Reference Mito Geome: BK065013.1
  
 ```
 apptainer build mitohifi.sif docker://ghcr.io/marcelauliano/mitohifi:master
