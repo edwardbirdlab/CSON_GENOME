@@ -3,7 +3,7 @@
 
  This is not intended as a turorial on how to do genome assembly, rather a log of what I did, follow at your own risk. <br>
 
- Between each major step I created a new clean directory, and symbolic linked relavent files to the new director. I reccomend this as some of these proceses generate a lot of files, and it get unmanageable very quickly. <br>
+ Between each major step I created a new clean directory, and symbolic linked relavent files to the new director. I reccomend this as some of these proceses generate a lot of files, and it will get unmanageable very quickly. <br>
 
  This work was copleted on ceres on the scinet computing cluster, along side a workstation for certain steps
  
