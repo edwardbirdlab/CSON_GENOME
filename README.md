@@ -45,7 +45,7 @@ apptainer build hifiasm_0.24.0.sif docker://quay.io/biocontainers/hifiasm:0.24.0
 apptainer exec ./hifiasm_0.24.0.sif hifiasm -o cson_F_hifi_phased.asm -t32 --h1 cson_f_hic_R1.fastq.gz --h2 cson_f_hic_R2.fastq.gz cson_f_hifi.filt.mitorm.fastq.gz
 ```
 
-## Contamination Check with Blobtools
+## Contamination Check with Blobtools in Draft Assembly
 
 Minimap2 version: 2.26 <br>
 Samtools Version: 1.17 <br>
@@ -87,51 +87,29 @@ apptainer exec ./blobtools_1.1.sif blobtools seqfilter -i cson_F_hifi_phased.asm
 
 Final Filtered Contigs at: cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fna <br>
 
-## Juicer
+## Create Draft Chromosome Assembly with 3d-dna
 
 Double Check enzyme site (DpnII)
 ```
 head -n 500 Culicoides_sonorensis_F10_R1.fastq.gz | gunzip | grep -o 'GATCGATC' | wc -l
 ```
-
-Juicer Version:
-BWA Version: 
-Samtools Version: 1.17
+<br>
+Juicer Version: 2.0.1 <br>
+Samtools Version: 1.17<br>
+3d-dna Version: 
 
 ```
+apptainer build 
+apptainer build 
 apptainer exec ./juicer_2.0.1.sif bwa index cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta
 apptainer exec ./juicer_2.0.1.sif generate_site_positions.py DpnII modify_final cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta
-samtools faidx cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta
-aawk '/^>/ {if (seq) print name, length(seq); name = substr($1,2); seq=""; next} {seq = seq $1} END {if (seq) print name, length(seq)}' cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta > cson_F_chrom.size
-mkdir fastq //Puts hi-c reads here
-apptainer exec ./juicer_2.0.1.sif juicer.sh -g cson_F_hifi_phased -s DpnII -z cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta -y modify_final_DpnII.txt -p cson_F_chrom.sizes
-
+apptainer exec ./samtools_1.17.sif samtools faidx cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta
+awk '/^>/ {if (seq) print name, length(seq); name = substr($1,2); seq=""; next} {seq = seq $1} END {if (seq) print name, length(seq)}' cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta > cson_F_chrom.size
 wget https://raw.githubusercontent.com/aidenlab/3d-dna/master/utils/generate-assembly-file-from-fasta.awk
 awk -f generate-assembly-file-from-fasta.awk cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta > cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.assembly
+mkdir fastq #Put hi-c reads here
+apptainer exec ./juicer_2.0.1.sif juicer.sh -g cson_F_hifi_phased -s DpnII -z cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta -y modify_final_DpnII.txt -p cson_F_chrom.sizes --assembly cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.assembly
+3d-dna 
 ```
 
-## HiCstuff
 
-Double Check enzyme site (DpnII)
-```
-head -n 500 Culicoides_sonorensis_F10_R1.fastq.gz | gunzip | grep -o 'GATCGATC' | wc -l
-```
-
-HiCstuff version:
-
-```
-apptainer build hicstuff_3.2.4.sif docker://quay.io/biocontainers/hicstuff:3.2.4--pyhdfd78af_0
-gunzip -f Culicoides_sonorensis_F10_R1.fastq.gz
-gunzip -f Culicoides_sonorensis_F10_R2.fastq.gz
-mkdir cson_f_hicstuff
-apptainer exec ./hicstuff_3.2.4.sif hicstuff pipeline -t 16 -a minimap2 -e DpnII -o cson_f_hicstuff/ -g cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fna Culicoides_sonorensis_F10_R1.fastq Culicoides_sonorensis_F10_R2.fastq
-awk '{print $1"\t"$2}' cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fna.fai > cson_f.chrom.sizes
-```
-
-## NF-Core hic
-
-```
-git clone https://github.com/nf-core/hic.git
-cd hic/conf/
-wget https://raw.githubusercontent.com/edwardbirdlab/rnaseq/master/conf/ceres.cfg
-```
