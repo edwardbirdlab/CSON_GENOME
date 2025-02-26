@@ -1,5 +1,11 @@
-# CSON_GENOME
- This is a walk through of how I did the CSON Female Genome
+# CSON GENOME Assembly & Annoations
+ This is a walk through of how I did the CSON Female Genome <br>
+
+ This is not intended as a turorial on how to do genome assembly, rather a log of what I did, follow at your own risk. <br>
+
+ Between each major step I created a new clean directory, and symbolic linked relavent files to the new director. I reccomend this as some of these proceses generate a lot of files, and it get unmanageable very quickly. <br>
+
+ This work was copleted on ceres on the scinet computing cluster, along side a workstation for certain steps
  
  
  ## Adapter Removal
@@ -96,20 +102,81 @@ head -n 500 Culicoides_sonorensis_F10_R1.fastq.gz | gunzip | grep -o 'GATCGATC' 
 <br>
 Juicer Version: 2.0.1 <br>
 Samtools Version: 1.17<br>
-3d-dna Version: 
+3d-dna Version: 190716
 
 ```
-apptainer build 
-apptainer build 
+apptainer build juicer_2.0.1.sif
 apptainer exec ./juicer_2.0.1.sif bwa index cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta
 apptainer exec ./juicer_2.0.1.sif generate_site_positions.py DpnII modify_final cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta
 apptainer exec ./samtools_1.17.sif samtools faidx cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta
 awk '/^>/ {if (seq) print name, length(seq); name = substr($1,2); seq=""; next} {seq = seq $1} END {if (seq) print name, length(seq)}' cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta > cson_F_chrom.size
 wget https://raw.githubusercontent.com/aidenlab/3d-dna/master/utils/generate-assembly-file-from-fasta.awk
 awk -f generate-assembly-file-from-fasta.awk cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta > cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.assembly
-mkdir fastq #Put hi-c reads here
+mkdir fastq #Put hi-c reads in this folder. Make sure they have the correct naming scheme *_R1.fastq.gz
 apptainer exec ./juicer_2.0.1.sif juicer.sh -g cson_F_hifi_phased -s DpnII -z cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta -y modify_final_DpnII.txt -p cson_F_chrom.sizes --assembly cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.assembly
-3d-dna 
+mkdir 3dddna
+cd 3ddna
+apptainer build 3d_dna.sif quay.io/biocontainers/3d-dna:201008--hdfd78af_0
+apptainer exec ./3d_dna.sif 3d-dna --assembly ../cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.assembly ../aligned/merged_nodups.txt
+```
+## Manual Curation of Draft Chromosome Assemlby in Juicebox
+
+Juicebox Version: 2.15
+3d-dna Version: 190716
+
+For this step we will download 2 of the output files for 3d-dna and load them into juicebox. Files cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.rawchromo...assembly and cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.rawchromo...hic.<br>
+
+These files were loaded into juice box and manually scaffolded according to the instrdtions in the Genome Assembly Cookbook from (aidenlab) - (https://aidenlab.org/assembly/manual_180322.pdf) <br>
+
+Final HiC Map: <br>
+
+Relatively minor changes were made to the map that was ouput from 3d-dna. Our map shows clear chromosome level assembly, and has relatively few unplaced scaffolds. A couple of these unplaced scaffolds show contact with some chromosome, but is ambigious, and were noth placed. Many of the smaller debris peices (pieces cut out from missassembly) show no contact points, even to themselves.  <br>
+
+## Producing Final Gapped Chromosome Assembly
+
+The edited assembly map was exported from jucebox and upload. The map was edited on a windows compter, so I convert line endings just to be safe. <br>
+
+Finally we will output our final gapped chromosome by running 3d-dna one last time
+```
+cat cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.rawchrom.review.assembly | sed 's/\r$//' > cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.rawchrom.fix.review.assembly
+apptainer exec /usr/local/share/3d-dna/run-asm-pipeline-post-review.sh -r cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.rawchrom.fix.review.assembly cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fasta merged_nodups.txt
+```
+We can also inspect the final Hi-C graph to make sure it looks as we expect <br>
+
+## Blobtools on Final Chromosome Assembly
+
+There were several missassemblies in the firt draft genome, and we now want to double check that none of the scaffolds considered "Debris" that were excised out are contamination that was missed the first time. <br>
+
+Minimap2 version: 2.26 <br>
+Samtools Version: 1.17 <br>
+Diamond Version: 2.0.15 <br>
+Blobtools Version: 1.1 <br>
+Uniprot & Blast DB Access Date: 2/21/2025
+
+```
+apptainer exec ./minimap2_2.26.sif minimap2 -ax map-hifi cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta cson_f_hifi.filt.mitorm.fastq.gz > cson_f_coverage_final.sam
+apptainer exec ./samtools_1.17.sif bash -c "samtools sort cson_f_coverage_final.sam -O bam -o cson_f_coverage_final.bam"
+apptainer exec ./samtools_1.17.sif bash -c "samtools index -@ 16 cson_f_coverage_final.bam"
+apptainer exec ./diamond_2.0.14.sif diamond blastx --query cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta --db ../blobtools/uniprot_with_taxids.dmnd --outfmt 6 qseqid staxids bitscore qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore --sensitive --max-target-seqs 1 --evalue 1e-25 --threads 16 > cson_uniprot_dblastx.out
+
+
+mkdir blobout
+apptainer exec ./blobtools_1.1.sif blobtools nodesdb --nodes nodes.dmp --names names.dmp
+apptainer exec ./blobtools_1.1.sif blobtools create -i cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta -b cson_f_coverage_final.bam -t cson_uniprot_dblastx.out -o blobout/cson_f
+apptainer exec ./blobtools_1.1.sif blobtools view -i blobout/cson_f.blobDB.json
+apptainer exec ./blobtools_1.1.sif blobtools plot -i blobout/cson_f.blobDB.json
+```
+Insepct Blobtools output <br>
+
+Blobtools Plot<br>
+
+Make a list of the scaffolds you want to keep<br>
+
+Blobtools Version: 1.1
+
+```
+apptainer exec ./blobtools_1.1.sif blobtools seqfilter -i cson_F_hifi_phased.asm.hic.hap1.p_ctg.fasta -l keep_scaffolds_blobtools.txt
 ```
 
+Final Filtered Contigs at: cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fna <br>
 
