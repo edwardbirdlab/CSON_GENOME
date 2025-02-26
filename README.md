@@ -22,7 +22,7 @@
  
 ## Mitochondrial Genome
  
- MitoHiFi Version: 3.2.2
+ MitoHiFi Version: 3.2.2 <br>
  Reference Mito Geome: BK065013.1
  
 ```
