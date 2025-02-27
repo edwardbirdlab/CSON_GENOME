@@ -166,10 +166,10 @@ There was containimation detected by FCS in out final genome. However, there wer
 Chromosome were nammed in order of size:<br>
 chr1, chr2, chr3<br>
 
-Unplaced scaffolds that had Hi-C contact evidence with a certain chromosome were labeled:<br>
+Unplaced scaffolds that had Hi-C contact evidence with a certain chromosome were labeled (number by size):<br>
 chr#_unplaced\_#<br>
 
-Unplaced scaffolds that had no clear Hi-C contatct evidnece with a _single_ chromosome were labeled:<br>
+Unplaced scaffolds that had no clear Hi-C contatct evidnece with a _single_ chromosome were labeled (number by size):<br>
 unplaced_#<br>
 
 The golden path (.agp) was also updated to correspond to the new squence names 
