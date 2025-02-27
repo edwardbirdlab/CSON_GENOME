@@ -159,7 +159,7 @@ tar -xvf s5cmd_2.0.0_Linux-64bit.tar.gz
 ./s5cmd  --no-sign-request cp  --part-size 50  --concurrency 50 s3://ncbi-fcs-gx/gxdb/latest/all.* $LOCAL_DB
 apptainer exec ./fcs-gx.sif python3 /app/bin/run_gx --fasta cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta --out-dir ./gx_out --gx-db ./fcs_gx_db --tax-id 179676
 ```
-There was containimation detected by FCS in out final genome. However, there were sevaral debris pieces that had no identifiable hit in gx_dx. This included HiC_scaffold_6, HiC_scaffold_13, HiC_scaffold_14, HiC_scaffold_17, HiC_scaffold_18, HiC_scaffold_20, and HiC_scaffold_28. I did not consider this alone enough evidence to purge these sequences, however if they also result in no gene evidence after eGAPx is run, I will purge them.
+There was containimation detected by FCS in out final genome. However, there were sevaral debris pieces that had no identifiable hit in gx_dx. This included HiC_scaffold_6, HiC_scaffold_13, HiC_scaffold_14, HiC_scaffold_17, HiC_scaffold_18, HiC_scaffold_20, and HiC_scaffold_28. I did not consider this alone enough evidence to purge these sequences, however if they also result in no gene evidence after eGAPx is run and no evidence of contact on the Hi-C map, I will purge them.
 
 ## Renamming Scaffolds
 
