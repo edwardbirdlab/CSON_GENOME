@@ -5,7 +5,7 @@
 
  Between each major step I created a new clean directory, and symbolic linked relavent files to the new director. I reccomend this as some of these proceses generate a lot of files, and it will get unmanageable very quickly. <br>
 
- This work was copleted on ceres on the scinet computing cluster, along side a workstation for certain steps
+ This work was completed on ceres on the scinet computing cluster, along side a workstation for certain steps
  
  
  ## Adapter Removal
@@ -144,40 +144,35 @@ apptainer exec /usr/local/share/3d-dna/run-asm-pipeline-post-review.sh -r cson_F
 ```
 We can also inspect the final Hi-C graph to make sure it looks as we expect <br>
 
-## Blobtools on Final Chromosome Assembly
+## NCBI - Foreign Containiment Screen on Final Chromosome Assembly
 
-There were several missassemblies in the firt draft genome, and we now want to double check that none of the scaffolds considered "Debris" that were excised out are contamination that was missed the first time. <br>
+The containiment check eariler was a quick and dirty protein blast using the uniprot database. This can lead to some odd classifications, and this time we want to be absolutely sure if we should remove sesquences or not.<br>
 
-Minimap2 version: 2.26 <br>
-Samtools Version: 1.17 <br>
-Diamond Version: 2.0.15 <br>
-Blobtools Version: 1.1 <br>
-Uniprot & Blast DB Access Date: 2/21/2025
+FCS version: 3.0.4 <br>
+FCS-gx Datase Version: build:Jan 19 2023 15:50:20; git:v0.3.0-151-g9aad15db - Accessed on 2/26/2025 <br>
 
 ```
-apptainer exec ./minimap2_2.26.sif minimap2 -ax map-hifi cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta cson_f_hifi.filt.mitorm.fastq.gz > cson_f_coverage_final.sam
-apptainer exec ./samtools_1.17.sif bash -c "samtools sort cson_f_coverage_final.sam -O bam -o cson_f_coverage_final.bam"
-apptainer exec ./samtools_1.17.sif bash -c "samtools index -@ 16 cson_f_coverage_final.bam"
-apptainer exec ./diamond_2.0.14.sif diamond blastx --query cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta --db ../blobtools/uniprot_with_taxids.dmnd --outfmt 6 qseqid staxids bitscore qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore --sensitive --max-target-seqs 1 --evalue 1e-25 --threads 16 > cson_uniprot_dblastx.out
-
-
-mkdir blobout
-apptainer exec ./blobtools_1.1.sif blobtools nodesdb --nodes nodes.dmp --names names.dmp
-apptainer exec ./blobtools_1.1.sif blobtools create -i cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta -b cson_f_coverage_final.bam -t cson_uniprot_dblastx.out -o blobout/cson_f
-apptainer exec ./blobtools_1.1.sif blobtools view -i blobout/cson_f.blobDB.json
-apptainer exec ./blobtools_1.1.sif blobtools plot -i blobout/cson_f.blobDB.json
+curl https://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/FCS/releases/latest/fcs-gx.sif -Lo fcs-gx.sif
+LOCAL_DB="./fcs_gx_db"
+curl -LO https://github.com/peak/s5cmd/releases/download/v2.0.0/s5cmd_2.0.0_Linux-64bit.tar.gz
+tar -xvf s5cmd_2.0.0_Linux-64bit.tar.gz
+./s5cmd  --no-sign-request cp  --part-size 50  --concurrency 50 s3://ncbi-fcs-gx/gxdb/latest/all.* $LOCAL_DB
+apptainer exec ./fcs-gx.sif python3 /app/bin/run_gx --fasta cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta --out-dir ./gx_out --gx-db ./fcs_gx_db --tax-id 179676
 ```
-Insepct Blobtools output <br>
+There was containimation detected by FCS in out final genome. However, there were sevaral debris pieces that had no identifiable hit in gx_dx. This included HiC_scaffold_6, HiC_scaffold_13, HiC_scaffold_14, HiC_scaffold_17, HiC_scaffold_18, HiC_scaffold_20, and HiC_scaffold_28. I did not consider this alone enough evidence to purge these sequences, however if they also result in no gene evidence after eGAPx is run, I will purge them.
 
-Blobtools Plot<br>
+## Renamming Scaffolds
 
-Make a list of the scaffolds you want to keep<br>
+Chromosome were nammed in order of size:<br>
+chr1, chr2, chr3<br>
 
-Blobtools Version: 1.1
+Unplaced scaffolds that had Hi-C contact evidence with a certain chromosome were labeled:<br>
+chr#_unplaced\_#<br>
 
-```
-apptainer exec ./blobtools_1.1.sif blobtools seqfilter -i cson_F_hifi_phased.asm.hic.hap1.p_ctg.fasta -l keep_scaffolds_blobtools.txt
-```
+Unplaced scaffolds that had no clear Hi-C contatct evidnece with a _single_ chromosome were labeled:<br>
+unplaced_#<br>
 
-Final Filtered Contigs at: cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered.fna <br>
+The golden path (.agp) was also updated to correspond to the new squence names 
+
+
 
