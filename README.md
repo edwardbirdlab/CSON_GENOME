@@ -52,6 +52,8 @@ apptainer build hifiasm_0.24.0.sif docker://quay.io/biocontainers/hifiasm:0.24.0
 apptainer exec ./hifiasm_0.24.0.sif hifiasm -o cson_F_hifi_phased.asm -t32 --h1 cson_f_hic_R1.fastq.gz --h2 cson_f_hic_R2.fastq.gz cson_f_hifi.filt.mitorm.fastq.gz
 ```
 
+Depending on your sequencing it may be a good idea to run purge dupes at this point. In the the female cson genome our Hi-C data was not from the individaul that the HiFi data was from. While this lead to a nearly complete haplotype resolution a small amount of duplication was idntified during Hi-C scaffolding. Purge dupes may have helped with this.
+
 ## Contamination Check with Blobtools in Draft Assembly
 
 Minimap2 version: 2.26 <br>
@@ -160,7 +162,7 @@ tar -xvf s5cmd_2.0.0_Linux-64bit.tar.gz
 apptainer exec ./fcs-gx.sif python3 /app/bin/run_gx --fasta cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta --out-dir ./gx_out --gx-db ./fcs_gx_db --tax-id 179676
 ```
 
-There was containimation detected by FCS in out final genome. However, there were sevaral debris pieces that had no identifiable hit in gx_dx. This included HiC_scaffold_6, HiC_scaffold_13, HiC_scaffold_14, HiC_scaffold_17, HiC_scaffold_18, HiC_scaffold_20, and HiC_scaffold_28.
+There was no containimation detected by FCS in out final genome. However, there were sevaral debris pieces that had no identifiable hit in gx_dx. This included HiC_scaffold_6, HiC_scaffold_13, HiC_scaffold_14, HiC_scaffold_17, HiC_scaffold_18, HiC_scaffold_20, and HiC_scaffold_28.
 
 ## Checking for duplication in debris
 
@@ -169,6 +171,27 @@ awk '/^>/ {count++} count<=3' cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC
 awk '/^>/ {count++} count>3' cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta > cson_F_debris.fasta
 apptainer exec ./mummer4.sif dnadiff cson_F_chromosomes.fasta cson_F_debris.fasta
 ```
+## Rules for Removing Unplaced Scaffolds
+
+Debris sequences were removed only if they met one (or more) of the following conditions:
+
+### Type I Removal: Haplotype contamination - observed by Hi-C map
+ - This type of debis occured via haplotype contamination. In this type the deduplicatied HiC data mapped better to the unplaced debris that the scaffolded chromosome. This looks like a lack of hic evidend in the chromosome, but a stong, linear interaction between part/all of the debris sample. Below is a example of what this looks like on the HiC map. This was considered enough evidence to remove these scaffolds.
+   _Insert example here_
+### Type II Removal: Haplotype contamination - observed by Hi-C & Mummer
+ - This type of haplotype contaomination is harder to determine than the above, so more evidence has been incorperated. This is the reverse, where the unplaced scaffold has very little to no HiC contacts. On possibile reson for this is that it is a haplotig, and the HiC data mapped better to the chromosome integrated sequence that this unplaced scaffold. However, since the HiC data was from the mother, and not the HiFi individual we wanted additional evidence to back this up. We ran Mummer dna diff, and looked for sequences that had a very high coverage query coverage compared to the chromosomes (Greater than 90%).
+### Type III Removal: Small with No Annotations
+ - HiC scaffolding left several small, unplaced scaffolds due either manual, or 3ddna miscaffolding snipping. These are very small, usually 1kb, or 5kb. For this reason we will remove any sequenced less than 10kb that had no predicted annotation from eGAPx.
+### Type IV Removal: Unidentified sequence with No Annotations
+ - While Foreign Containiment Screen did not find any evidence of contamination in our sequences, it was unable to classify some of our sequences. Therefore any sequences that FCS was not able to identify _and_ get no annoations from eGAPx will be removed.
+
+## Removal of Unplace Scaffolds Phase 1 (Before eGAPx annotation)
+
+### Several Scaffolds met one of the conditions before running eGAPx (Phase 1 recommendation in spread sheet) were removed. <br>
+ This included: <br>
+ HiC_scaffold_10 - Type I
+ HiC_scaffold_31 - Type II
+ HiC_scaffold_32 - Type I & II
 
 ## Renamming Scaffolds
 
@@ -183,5 +206,6 @@ unplaced_#<br>
 
 The golden path (.agp) was also updated to correspond to the new squence names 
 
+## Running eGAPx Genome Annotation
 
 
