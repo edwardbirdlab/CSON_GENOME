@@ -184,13 +184,14 @@ Debris sequences were removed only if they met one (or more) of the following co
  - HiC scaffolding left several small, unplaced scaffolds due either manual, or 3ddna miscaffolding snipping. These are very small, usually 1kb, or 5kb. For this reason we will remove any sequenced less than 10kb that had no predicted annotation from eGAPx.
 ### Type IV Removal: Unidentified sequence with No Annotations
  - While Foreign Containiment Screen did not find any evidence of contamination in our sequences, it was unable to classify some of our sequences. Therefore any sequences that FCS was not able to identify _and_ get no annoations from eGAPx will be removed.
+### Type V Removal:
 
 ## Removal of Unplace Scaffolds Phase 1 (Before eGAPx annotation)
 
-### Several Scaffolds met one of the conditions before running eGAPx (Phase 1 recommendation in spread sheet) were removed. <br>
+Several Scaffolds met one of the conditions before running eGAPx (Phase 1 recommendation in spread sheet) were removed. <br>
  This included: <br>
- HiC_scaffold_10 - Type I
- HiC_scaffold_31 - Type II
+ HiC_scaffold_10 - Type I<br>
+ HiC_scaffold_31 - Type II<br>
  HiC_scaffold_32 - Type I & II
 
 ## Renamming Scaffolds
@@ -204,8 +205,12 @@ chr#_unplaced\_#<br>
 Unplaced scaffolds that had no clear Hi-C contatct evidnece with a _single_ chromosome were labeled (number by size):<br>
 unplaced_#<br>
 
-The golden path (.agp) was also updated to correspond to the new squence names 
+The fasta was nammed cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.phase1.fasta after removal of the 3 scaffolds and name change
+
+## Gathering SRA RNAseq Data
+
+## Preping Life History RNAseq Data
 
 ## Running eGAPx Genome Annotation
 
-
+## Running Earl Grey
