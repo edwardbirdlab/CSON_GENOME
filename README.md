@@ -207,6 +207,15 @@ unplaced_#<br>
 
 The fasta was nammed cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.phase1.fasta after removal of the 3 scaffolds and name change
 
+## Purge Haplotigs
+
+```
+apptainer build purge_haplotigs_1.1.3.sif docker://quay.io/biocontainers/purge_haplotigs:1.1.3--hdfd78af_0
+apptainer exec ./minimap2_2.26.sif minimap2 -ax map-hifi cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta cson_f_hifi.filt.fastq.gz --secondary=no > cson_f_hic_coverage.sam
+apptainer exec ./samtools_1.17.sif bash -c "samtools sort cson_f_hic_coverage.sam -O bam -T tmp.ali -o cson_f_hic_coverage.bam"
+
+```
+
 ## Gathering SRA RNAseq Data
 
 ## Preping Life History RNAseq Data
