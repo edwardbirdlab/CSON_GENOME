@@ -209,7 +209,9 @@ The fasta was nammed cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.phase1.f
 
 ## Gathering SRA RNAseq Data
 
-Now we will gather and trim rnaseq data from SRA. All accessions for tasid 17
+Now we will gather and trim rnaseq data from SRA. All accessions for tasid 179676
+
+After getting a the SRA accession sheet from NCBi we will use edwardbirdlab/
 
 ## Preping Life History RNAseq Data
 
