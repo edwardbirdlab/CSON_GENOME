@@ -166,6 +166,8 @@ There was no containimation detected by FCS in out final genome. However, there 
 
 ## Checking for duplication in debris
 
+Mummer Version: 4.0
+
 ```
 awk '/^>/ {count++} count<=3' cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta > cson_F_chromosomes.fasta
 awk '/^>/ {count++} count>3' cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.fasta > cson_F_debris.fasta
@@ -215,6 +217,10 @@ Now we will gather and trim rnaseq data from SRA, and Trim data, and inspect for
 
 After getting a the SRA accession sheet from NCBi we will use edwardbirdlab/SRA-FETCH
 
+Nextflow Version: <br>
+FastQC Version: <br>
+FastP Version:
+
 ```
 nextflow run -resume /project/culicoides/bird_projects/pipelines/SRA-FETCH -c /project/culicoides/bird_projects/pipelines/SRA-FETCH/configs/ceres/ceres.cfg \
     --workflow_opt paired \
@@ -238,9 +244,13 @@ All samples except (insert sample here) were determined to be of sufficent quali
 
 ## Preping Life History RNAseq Data
 
-Now we will also trim the MLH data and ispect its QC
+Now we will also trim the MLH data and ispect its QC <br>
 
-I used the Shortread QC module from edwardbirdlab/BALROG-MSR
+I used the Shortread QC module from edwardbirdlab/BALROG-MSR <br>
+
+Nextflow Version: <br>
+FastQC Version: <br>
+FastP Version: 
 
 ```
 nextflow run -resume /90daydata/shared/edwardbird/Pipelines/BALROG-MSR -c /90daydata/shared/edwardbird/Pipelines/BALROG-MSR/configs/ceres/ceres.cfg \
@@ -257,7 +267,7 @@ nextflow run -resume /90daydata/shared/edwardbird/Pipelines/BALROG-MSR -c /90day
     --fastp_minlen 50 \
     -N edwardbird@ksu.edu
 ```
-Inspected QC and determine all samples were of sufficent quality.
+Inspected QC and determine all samples were of sufficent quality. <br>
 
 ## Running eGAPx Genome Annotation (Prelim Annotaiton)
 
