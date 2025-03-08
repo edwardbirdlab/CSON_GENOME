@@ -186,13 +186,15 @@ Debris sequences were removed only if they met one (or more) of the following co
  - While Foreign Containiment Screen did not find any evidence of contamination in our sequences, it was unable to classify some of our sequences. Therefore any sequences that FCS was not able to identify _and_ get no annoations from eGAPx will be removed.
 ### Type V Removal:
 
-## Removal of Unplace Scaffolds Phase 1 (Before eGAPx annotation)
+## Removal of Unplace Scaffolds Phase 1 (Before prelim eGAPx annotation)
 
 Several Scaffolds met one of the conditions before running eGAPx (Phase 1 recommendation in spread sheet) were removed. <br>
  This included: <br>
  HiC_scaffold_10 - Type I<br>
  HiC_scaffold_31 - Type II<br>
  HiC_scaffold_32 - Type I & II
+
+
 
 ## Renamming Scaffolds
 
@@ -209,12 +211,65 @@ The fasta was nammed cson_F_hifi_phased.asm.hic.hap1.p_ctg.filtered_HiC.phase1.f
 
 ## Gathering SRA RNAseq Data
 
-Now we will gather and trim rnaseq data from SRA. All accessions for tasid 179676
+Now we will gather and trim rnaseq data from SRA, and Trim data, and inspect for QC. All accessions for tasid 179676<br>
 
-After getting a the SRA accession sheet from NCBi we will use edwardbirdlab/
+After getting a the SRA accession sheet from NCBi we will use edwardbirdlab/SRA-FETCH
+
+```
+nextflow run -resume /project/culicoides/bird_projects/pipelines/SRA-FETCH -c /project/culicoides/bird_projects/pipelines/SRA-FETCH/configs/ceres/ceres.cfg \
+    --workflow_opt paired \
+    --project_name cson_rnaseq \
+    --sample_sheet ./cson_rnaseq_sra_acc.csv \
+    --apikey e10498aa1ed5c5feb58f5ddcec0cfe381a09 \
+    --fastp_minlen 50 \
+    -N edwardbird@ksu.edu
+
+nextflow run -resume /project/culicoides/bird_projects/pipelines/SRA-FETCH -c /project/culicoides/bird_projects/pipelines/SRA-FETCH/configs/ceres/ceres.cfg \
+    --workflow_opt multiqc \
+    --project_name cson_rnaseq \
+    --sample_sheet ./cson_rnaseq_sra_acc.csv \
+    --apikey e10498aa1ed5c5feb58f5ddcec0cfe381a09 \
+    --fastp_minlen 50 \
+    -N edwardbird@ksu.edu
+```
+Investigate MultiQC to determine if RNASeq data should be used for genome annotaion <br>
+
+All samples except (insert sample here) were determined to be of sufficent quality.
 
 ## Preping Life History RNAseq Data
 
-## Running eGAPx Genome Annotation
+Now we will also trim the MLH data and ispect its QC
+
+I used the Shortread QC module from edwardbirdlab/BALROG-MSR
+
+```
+nextflow run -resume /90daydata/shared/edwardbird/Pipelines/BALROG-MSR -c /90daydata/shared/edwardbird/Pipelines/BALROG-MSR/configs/ceres/ceres.cfg \
+    --workflow_opt sr_qc_only \
+    --project_name mlh_trim \
+    --sample_sheet ./mlh_samplesheet.csv \
+    --fastp_minlen 50 \
+    -N edwardbird@ksu.edu
+
+nextflow run -resume /90daydata/shared/edwardbird/Pipelines/BALROG-MSR -c /90daydata/shared/edwardbird/Pipelines/BALROG-MSR/configs/ceres/ceres.cfg \
+    --workflow_opt multiqc \
+    --project_name mlh_trim \
+    --sample_sheet ./mlh_samplesheet.csv \
+    --fastp_minlen 50 \
+    -N edwardbird@ksu.edu
+```
+Inspected QC and determine all samples were of sufficent quality.
+
+## Running eGAPx Genome Annotation (Prelim Annotaiton)
+
+Scinet was blocked from the NCBI FTP API at this time, so I had to donload the local cache and upload it to run eGAPx in offline mode <br>
+
+```
+source /project/culicoides/bird_projects/conda/epagx/bin/activate
+python3 ./ui/egapx.py /90daydata/shared/edwardbird/genome_reassembly/egapx/egapx/input_cson_all.yaml -e slurm -o cson_all -lc ../local_cache
+```
+
+## Removal of Unplace Scaffolds Phase 12 (After prelim eGAPx annotation)
+
+## Running eGAPx Genom Annotaion (Final Assembely)
 
 ## Running Earl Grey
