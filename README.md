@@ -273,6 +273,8 @@ Inspected QC and determine all samples were of sufficent quality. <br>
 
 Scinet was blocked from the NCBI FTP API at this time, so I had to donload the local cache and upload it to run eGAPx in offline mode <br>
 
+eGAPx Version: <br>
+
 ```
 source /project/culicoides/bird_projects/conda/epagx/bin/activate
 python3 ./ui/egapx.py /90daydata/shared/edwardbird/genome_reassembly/egapx/egapx/input_cson_all.yaml -e slurm -o cson_all -lc ../local_cache
@@ -282,12 +284,16 @@ python3 ./ui/egapx.py /90daydata/shared/edwardbird/genome_reassembly/egapx/egapx
 
 ## Running eGAPx Genom Annotaion (Final Assembely)
 
+eGAPx Version: <br>
+
 ```
 source /project/culicoides/bird_projects/conda/epagx/bin/activate
 python3 ./ui/egapx.py /90daydata/shared/edwardbird/genome_reassembly/egapx/egapx/input_cson_final.yaml -e slurm -o cson_final -lc ../local_cache
 ```
 
 ## Running Earl Grey
+
+Earl Grey Version: <br>
 
 ```
 apptainer build earlgrey.sif docker://tobybaril/earlgrey_dfam3.7:latest
