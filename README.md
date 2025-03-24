@@ -226,7 +226,7 @@ nextflow run -resume /project/culicoides/bird_projects/pipelines/SRA-FETCH -c /p
     --workflow_opt paired \
     --project_name cson_rnaseq \
     --sample_sheet ./cson_rnaseq_sra_acc.csv \
-    --apikey e10498aa1ed5c5feb58f5ddcec0cfe381a09 \
+    --apikey {NCBI_APIKEY} \
     --fastp_minlen 50 \
     -N edwardbird@ksu.edu
 
@@ -234,7 +234,7 @@ nextflow run -resume /project/culicoides/bird_projects/pipelines/SRA-FETCH -c /p
     --workflow_opt multiqc \
     --project_name cson_rnaseq \
     --sample_sheet ./cson_rnaseq_sra_acc.csv \
-    --apikey e10498aa1ed5c5feb58f5ddcec0cfe381a09 \
+    --apikey {NCBI_APIKEY} \
     --fastp_minlen 50 \
     -N edwardbird@ksu.edu
 ```
