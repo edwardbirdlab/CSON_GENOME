@@ -284,7 +284,7 @@ python3 ./ui/egapx.py /90daydata/shared/edwardbird/genome_reassembly/egapx/egapx
 
 ## Running eGAPx Genom Annotaion (Final Assembely)
 
-eGAPx Version: <br>
+eGAPx Version: 0.3.2-alpha <br>
 
 ```
 source /project/culicoides/bird_projects/conda/epagx/bin/activate
@@ -293,7 +293,7 @@ python3 ./ui/egapx.py /90daydata/shared/edwardbird/genome_reassembly/egapx/egapx
 
 ## Running Earl Grey
 
-Earl Grey Version: <br>
+Earl Grey Version: 5.1.1<br>
 
 ```
 apptainer build earlgrey.sif docker://tobybaril/earlgrey_dfam3.7:latest
@@ -301,3 +301,15 @@ apptainer exec ./earlgrey.sif earlGrey -g CSON_F_Final.fasta -s 179676 -o cson_f
 ```
 
 ## Prepping RNAseq Data from Breaker (And Generating BigWig Tracks)
+
+## Functional Annotation Testing
+
+## Unrealted Other Steps
+
+# Repeat annotating the C Brevatarsis genome
+
+Earl Grey Version: 5.1.1<br>
+```
+apptainer build earlgrey.sif docker://tobybaril/earlgrey_dfam3.7:latest
+apptainer exec ./earlgrey.sif earlGrey -g GCA_036172545.2_AGI_CSIRO_Cbre_v1_genomic.fasta -s 469753 -o cbrev_2 -d yes -t 16 -r 7147
+```
