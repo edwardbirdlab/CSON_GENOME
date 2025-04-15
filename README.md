@@ -313,3 +313,18 @@ Earl Grey Version: 5.1.1<br>
 apptainer build earlgrey.sif docker://tobybaril/earlgrey_dfam3.7:latest
 apptainer exec ./earlgrey.sif earlGrey -g GCA_036172545.2_AGI_CSIRO_Cbre_v1_genomic.fasta -s 469753 -o cbrev_2 -d yes -t 16 -r 7147
 ```
+
+## Running edwardbirdlab/genomeprep to prepare RNASeq Data
+
+Star Version x.x.x <br>
+Samtools Versoin x.x.x <br>
+Deeptools Version x.x.x <br>
+UCSC Version x.x.x <br>
+```
+nextflow run -resume /project/culicoides/bird_projects/pipelines/nf-eGAPx-BIGWIG/ -c /project/culicoides/bird_projects/pipelines/nf-eGAPx-BIGWIG/configs/ceres/ceres.cfg \
+    --project_name cson_final \
+    --sample_sheet ./all_samples.csv \
+    -N edwardbird@ksu.edu \
+    -with-report nextflow.report.html \
+    -with-timeline nextflow.timeline.html
+```
