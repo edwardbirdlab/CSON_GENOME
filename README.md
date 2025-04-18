@@ -302,11 +302,8 @@ apptainer exec ./earlgrey.sif earlGrey -g CSON_F_Final.fasta -s 179676 -o cson_f
 
 ## Prepping RNAseq Data from Breaker (And Generating BigWig Tracks)
 
-## Functional Annotation Testing
 
-## Unrealted Other Steps
-
-# Repeat annotating the C Brevatarsis genome
+# Repeat annotating the C Brevatarsis genome (For Comparison)
 
 Earl Grey Version: 5.1.1<br>
 ```
@@ -327,4 +324,12 @@ nextflow run -resume /project/culicoides/bird_projects/pipelines/nf-eGAPx-BIGWIG
     -N edwardbird@ksu.edu \
     -with-report nextflow.report.html \
     -with-timeline nextflow.timeline.html
+```
+## Running Breaker3
+
+Breaker Version 3 <br>
+Orthodb Diptera (Accessed 04/18/2025)
+
+```
+braker.pl --genome genome.fa --prot_seq proteins.fa --rnaseq_sets_ids ERR5767212 --threads N --busco_lineage=lineage_odb10
 ```
