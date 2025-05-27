@@ -333,3 +333,14 @@ Orthodb Diptera (Accessed 04/18/2025)
 ```
 braker.pl --genome genome.fa --prot_seq proteins.fa --rnaseq_sets_ids ERR5767212 --threads N --busco_lineage=lineage_odb10
 ```
+
+## Running Eggnog-Mapper
+
+## Running ebwardbirdlab/nf_nulti_synteny - OrthoFinder3 & McScanX
+
+
+
+
+## Breaker2 - CBREV & CSTEL
+
+## EarlGrey - CBREV
