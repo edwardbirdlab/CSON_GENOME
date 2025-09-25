@@ -77,6 +77,7 @@ wget ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/c
 gunzip uniprot_sprot.fasta.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 tar -xzvf taxdump.tar.gz names.dmp nodes.dmp
+sed -i -e 's/realm/no rank/g; s/cellular root/no rank/g; s/acellular root/no rank/g; s/domain/superkingdom/g' nodes.dmp
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
 apptainer exec ./diamond_2.0.14.sif diamond makedb --in uniprot_sprot.fasta -d uniprot_with_taxids --taxonmap prot.accession2taxid.gz --taxonnodes nodes.dmp --taxonnames names.dmp
 apptainer exec ./diamond_2.0.14.sif diamond blastx --query cson_F_hifi_phased.asm.hic.hap1.p_ctg.fasta --db uniprot_with_taxids.dmnd --outfmt 6 qseqid staxids bitscore qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore --sensitive --max-target-seqs 1 --evalue 1e-25 --threads 16 > cson_uniprot_dblastx.out
