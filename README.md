@@ -49,7 +49,12 @@ HiFi-ASM Version: 0.24.0
 
 ```
 apptainer build hifiasm_0.24.0.sif docker://quay.io/biocontainers/hifiasm:0.24.0--h5ca1c30_0
+apptainer build quast_5_3_0.sif docker://quay.io/biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2
+apptainer build gfatools_0_5_5.sif docker://
 apptainer exec ./hifiasm_0.24.0.sif hifiasm -o cson_F_hifi_phased.asm -t32 --h1 cson_f_hic_R1.fastq.gz --h2 cson_f_hic_R2.fastq.gz cson_f_hifi.filt.mitorm.fastq.gz
+apptainer exec ./gfatools_0_5_5.sif gfatools gfa2fa cson_F_hifi_phased.asm.hic.hap1.p_ctg.gfa > cson_F_hifi_phased.hap1.fasta
+apptainer exec ./gfatools_0_5_5.sif gfatools gfa2fa cson_F_hifi_phased.asm.hic.hap2.p_ctg.gfa > cson_F_hifi_phased.hap2.fasta
+apptainer exec ./quast_5_3_0.sif quast.py cson_F_hifi_phased.hap1.fasta cson_F_hifi_phased.hap2.fasta
 ```
 
 Depending on your sequencing it may be a good idea to run purge dupes at this point. In the the female cson genome our Hi-C data was not from the individaul that the HiFi data was from. While this lead to a nearly complete haplotype resolution a small amount of duplication was idntified during Hi-C scaffolding. Purge dupes may have helped with this.
